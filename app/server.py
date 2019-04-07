@@ -8,7 +8,6 @@ from io import BytesIO
 from fastai import *
 from fastai.vision import *
 
-# export_file_url = 'https://www.dropbox.com/s/v6cuuvddq73d1e0/export.pkl?raw=1'
 export_file_url = 'https://drive.google.com/open?id=14gsH_T9OgekR2TYUwru7jLDksXg3o08E'
 export_file_name = 'export.pkl'
 
@@ -55,7 +54,11 @@ async def analyze(request):
     img_bytes = await (data['file'].read())
     img = open_image(BytesIO(img_bytes))
     prediction = learn.predict(img)[0]
-    return JSONResponse({'result': str(prediction)})
+    confidence = learn.predict(img)[2]
+    return JSONResponse({
+        'result': str(prediction),
+        'confidence': str(confidence)
+    })
 
 if __name__ == '__main__':
     if 'serve' in sys.argv: uvicorn.run(app=app, host='0.0.0.0', port=5042)
